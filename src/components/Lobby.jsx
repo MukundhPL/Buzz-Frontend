@@ -9,15 +9,21 @@ const Lobby = ({currRoom,socket,name,Buzzed,Members,setBuzzed,setMembers,isLock,
   const Sound=new Audio( Buzz)
   const playRef=useRef(null)
   const[isBuzz,setBuzz]=useState(false)
-  
+
+  const [message,setMessage]=useState("")
+  const alertUser=(msg)=>{
+    setMessage(msg)
+    const al= document.getElementById("al")
+    al.showModal()
+  } 
   socket.on("clear",(members)=>{
     setMembers(members)
     setBuzzed([])
     setBuzz(false)
   })
   socket.on("alert",(msg)=>{
-    alert(msg)
-})
+      alertUser(msg)
+  })
   socket.on("newJoin",(data)=>{
     setMembers(data.members)
   })
@@ -36,7 +42,7 @@ const Lobby = ({currRoom,socket,name,Buzzed,Members,setBuzzed,setMembers,isLock,
   }
   socket.on("endGame",async(msg)=>{
     console.log(`${msg}`)
-    alert(msg)
+    alertUser(msg)
     setTimeout(()=>navigate("/"),2000);
   })
   socket.on("lock",()=>{
@@ -49,6 +55,13 @@ const Lobby = ({currRoom,socket,name,Buzzed,Members,setBuzzed,setMembers,isLock,
   })
   return (
     <div className='wrapper'>
+            <dialog id="al">
+                <p className='item alert'>Alert</p>
+                <p className='item'>{message}</p>
+                <form method='dialog'>
+                    <button className='btn'>Close</button>
+                </form>
+            </dialog>
             <p className="title" style={{marginBottom:"5px"}}>Room : <span style={{color:"antiquewhite"}}>{`${currRoom}`}</span></p>
             <p className="title" style={{marginBottom:"25px",display:"flex"}}>Play Sound : <input type="checkbox" ref={playRef} defaultChecked={true} /></p>
             
